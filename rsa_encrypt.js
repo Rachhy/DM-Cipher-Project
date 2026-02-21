@@ -1,4 +1,3 @@
-
 function modPow(base, exp, mod) {
   base = BigInt(base);
   exp = BigInt(exp);
@@ -21,30 +20,37 @@ function rsaEncryptText() {
   const nVal = document.getElementById("mod-n").value.trim();
   const out = document.getElementById("result-rsa-e");
 
-  if (!text) {
-    out.value = "Please enter text.";
-    return;
-  }
-  if (!eVal || !nVal) {
-    out.value = "Please enter e and n.";
+  if (!text) { out.value = "Please enter text."; return; }
+  if (!eVal || !nVal) { out.value = "Please enter e and n."; return; }
+
+  let e, n;
+  try {
+    e = BigInt(eVal);
+    n = BigInt(nVal);
+  } catch {
+    out.value = "Invalid e or n (must be integers).";
     return;
   }
 
-  const e = BigInt(eVal);
-  const n = BigInt(nVal);
-  if (BigInt(nVal) <= 255n) {
-  out.value = "n is too small. Use bigger primes so n > 255.";
-  return;}
+  if (n <= 255n) {
+    out.value = "n is too small. Use bigger primes so n > 255.";
+    return;
+  }
 
-  // encrypt each character ASCII code
-  let cipherParts = [];
+  // Encrypt each character code (ASCII/UTF-16 code units)
+  const cipherParts = [];
   for (let i = 0; i < text.length; i++) {
-    const m = BigInt(text.charCodeAt(i)); // ASCII
+    const m = BigInt(text.charCodeAt(i));
+    if (m >= n) {
+      out.value = `Character code ${m} is >= n. Use bigger n.`;
+      return;
+    }
     const c = modPow(m, e, n);
-    cipherParts.push(c.toString().padStart(2, "0"));
+    cipherParts.push(c.toString());
   }
 
-  out.value = cipherParts.join("");
+  // Use a separator so it can be decoded later
+  out.value = cipherParts.join(" ");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
