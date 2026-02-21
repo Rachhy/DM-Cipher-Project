@@ -238,9 +238,8 @@
     display: flex;
     gap: 10px;            
     align-items: center;
-    flex-direction: column;
     
-}        
+}
 
 .lglg {
     font-family: Arial, Helvetica, sans-serif;
@@ -264,6 +263,10 @@ textarea {
 textarea {
     resize: vertical;      
 }
+    .yeahss {
+        flex-direction: column;
+    }
+
 @media (max-width: 1650px) {
     .yeah {
         flex-direction: column;
@@ -874,6 +877,7 @@ Remove the extra X characters to obtain the original message: <b>HELLOWORLD.</b>
     </div>
 </div>
 </div>
+
 <div class="ti1" style="margin-top: 30px;margin-bottom: 20px;">
     <div class="ti-1">
         II.RSA
@@ -994,11 +998,11 @@ These keys are mathematically related and are used for encryption and decryption
     <div class="yeah" style="background-image: url('pic/h.png');padding: 20px 10px;">
         <div class="lglg">
             <label for="keygenp" style="color:white;"><b>Enter the first prime Number(p) : </b></label>
-            <textarea style="width: 250px;" name="" id="keygenp" type="number" type="number" placeholder="Enter Numbers. Ex: 61"></textarea>
+            <textarea style="width: 250px;" name="" id="keygenp" type="number" placeholder="Enter Numbers. Ex: 61"></textarea>
         </div>
         <div class="lglg">
             <label for="keygenq" style="color:white;"><b>Enter the Second prime Number(q) : </b></label>
-            <textarea name="" style="width: 250px;" type="number" type="number" id="keygenq" placeholder="Enter Numbers. Ex: 53"></textarea>
+            <textarea name="" style="width: 250px;" type="number" id="keygenq" placeholder="Enter Numbers. Ex: 53"></textarea>
         </div>
         <button id="btnRSA"  class="buttb" style="background-color: rgb(66, 132, 231);">
             Generate Key
@@ -1026,11 +1030,11 @@ These keys are mathematically related and are used for encryption and decryption
         </div>
         <div class="lglg">
             <label for="" style="color: white;"><b>Enter the Publice key(e): </b></label>
-            <input name="" type="number" id="key-e" placeholder="NUM" style="width: 80%;"></input>
+            <input name="" type="text" id="key-e" placeholder="NUM" style="width: 80%;"></input>
         </div>
         <div class="lglg">
             <label for="mod-n" style="color: white;"><b>Enter the modulus(n): </b></label>
-            <input name="" id="mod-n" type="number" placeholder="NUM" style="width: 80%;"></input>
+            <input name="" id="mod-n" type="text" placeholder="NUM" style="width: 80%;"></input>
         </div>
             <button class="buttb" id="btnRSAEncrypt">
                 Encrypt
@@ -1052,7 +1056,7 @@ These keys are mathematically related and are used for encryption and decryption
     <div class="yeah" style="background-image: url(pic/h.png); padding: 20px 10px;">
         <div class="lglg">
             <label for="t-rsa-d" style="color: white;"><b>Enter Your Text (Plain text or Cipher text): </b></label>
-            <textarea name="" id="t-rsa-d" placeholder="Ex:  Attack Paris Tomorrow Morning!"></textarea>
+            <textarea name="" id="t-rsa-d" placeholder="Ex:"></textarea>
         </div>
         <div class="lglg">
             <label for="key-d" style="color: white;"><b>Enter the Publice key(d): </b></label>
@@ -1078,7 +1082,7 @@ These keys are mathematically related and are used for encryption and decryption
         <div class="lglg" style="font-family: Arial, Helvetica, sans-serif; font-size: clamp(14px,2vw,16px);">
             Cheak my repository for codes : 
         </div>
-        <div class="lglg" style="font-family: Arial, Helvetica, sans-serif; font-size: clamp(14px,2vw,16px);text-align: center;">(scan here)
+        <div class="lglg" style="font-family: Arial, Helvetica, sans-serif; font-size: clamp(14px,2vw,16px);text-align: center;"><a href="https://github.com/Rachhy/DM-Cipher-Project" style="color: #0a0b16;text-decoration: none;font-family: Arial, Helvetica, sans-serif; font-size: clamp(14px,2vw,16px);">(scan here)</a>
             <img width="180px" src="pic/qrcode.png" alt="">
         </div>
     </div>
@@ -1099,10 +1103,5 @@ These keys are mathematically related and are used for encryption and decryption
   <script src="rsa_encrypt.js"></script>
   <script src="rsa_decrypt.js"></script>
   <script src="menber.js"></script>
-
+  
 </html>
-
-
-
-
-
