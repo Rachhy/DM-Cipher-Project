@@ -1,6 +1,5 @@
 // ---------- BigInt helpers ----------
 function toBigIntStrict(s) {
-  // allow only digits (no decimals, no signs)
   if (!/^\d+$/.test(s)) return null;
   return BigInt(s);
 }
@@ -8,39 +7,80 @@ function toBigIntStrict(s) {
 function gcdBigInt(a, b) {
   a = a < 0n ? -a : a;
   b = b < 0n ? -b : b;
-  while (b !== 0n) {
-    [a, b] = [b, a % b];
-  }
+  while (b !== 0n) [a, b] = [b, a % b];
   return a;
 }
 
 function modInverseRSA(a, m) {
-  // Extended Euclid (BigInt)
   a = ((a % m) + m) % m;
 
   let t = 0n, newT = 1n;
   let r = m, newR = a;
 
   while (newR !== 0n) {
-    const q = r / newR; // BigInt division
+    const q = r / newR;
     [t, newT] = [newT, t - q * newT];
     [r, newR] = [newR, r - q * newR];
   }
 
-  if (r !== 1n) return null; // not invertible
+  if (r !== 1n) return null;
   if (t < 0n) t += m;
   return t;
 }
 
-// Simple prime test (OK for ~1e9..1e12 range; not for huge RSA primes)
+// ---------- Fast primality test (Miller–Rabin) ----------
+function modPow(base, exp, mod) {
+  base %= mod;
+  let result = 1n;
+  while (exp > 0n) {
+    if (exp & 1n) result = (result * base) % mod;
+    base = (base * base) % mod;
+    exp >>= 1n;
+  }
+  return result;
+}
+
+// Deterministic for n < 2^64 with these bases.
+// For bigger n, it's still a strong probabilistic test.
+const MR_BASES_64 = [2n, 325n, 9375n, 28178n, 450775n, 9780504n, 1795265022n];
+
 function isPrimeRSA(n) {
   if (n < 2n) return false;
-  if (n === 2n || n === 3n) return true;
-  if (n % 2n === 0n || n % 3n === 0n) return false;
 
-  // 6k ± 1 optimization
-  for (let i = 5n; i * i <= n; i += 6n) {
-    if (n % i === 0n || n % (i + 2n) === 0n) return false;
+  // quick small prime checks
+  const smallPrimes = [2n, 3n, 5n, 7n, 11n, 13n, 17n, 19n, 23n, 29n, 31n, 37n];
+  for (const p of smallPrimes) {
+    if (n === p) return true;
+    if (n % p === 0n) return false;
+  }
+
+  // write n-1 = d * 2^s
+  let d = n - 1n;
+  let s = 0n;
+  while ((d & 1n) === 0n) {
+    d >>= 1n;
+    s++;
+  }
+
+  // choose bases
+  // If n < 2^64, MR_BASES_64 is deterministic.
+  // Otherwise, we still use them as a strong test.
+  for (let a of MR_BASES_64) {
+    a %= n;
+    if (a === 0n) continue;
+
+    let x = modPow(a, d, n);
+    if (x === 1n || x === n - 1n) continue;
+
+    let composite = true;
+    for (let r = 1n; r < s; r++) {
+      x = (x * x) % n;
+      if (x === n - 1n) {
+        composite = false;
+        break;
+      }
+    }
+    if (composite) return false;
   }
   return true;
 }
@@ -59,12 +99,13 @@ function generateRSAKey() {
     return;
   }
 
-  if (!isPrimeRSA(p) || !isPrimeRSA(q)) {
-    out.value = "p and q must be prime numbers.";
-    return;
-  }
   if (p === q) {
     out.value = "p and q must be different primes.";
+    return;
+  }
+
+  if (!isPrimeRSA(p) || !isPrimeRSA(q)) {
+    out.value = "p and q must be prime numbers.";
     return;
   }
 
@@ -75,11 +116,17 @@ function generateRSAKey() {
   let e = 65537n;
   if (e >= phi) e = 3n;
 
-  // Make sure gcd(e, phi) = 1
+  // Ensure gcd(e, phi) = 1
   while (e < phi && gcdBigInt(e, phi) !== 1n) {
     e += 2n;
   }
 
+  if (e >= phi) {
+    out.value = "Cannot find valid public exponent e. Try different primes.";
+    return;
+  }
+
+  // private exponent d
   const d = modInverseRSA(e, phi);
   if (d === null) {
     out.value = "Cannot find valid keys. Try different primes.";
